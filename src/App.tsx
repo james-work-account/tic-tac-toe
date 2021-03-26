@@ -80,29 +80,28 @@ const App: React.FC = () => {
   }
 
   const Heading: React.FC = () => {
+    let h1: JSX.Element;
+    let buttonText: "Reset game" | "Play again?";
     switch (winner) {
       case null:
-        return <h1>{playerToMove} to move!</h1>;
+        h1 = <h1>{playerToMove} to move!</h1>;
+        buttonText = "Reset game";
+        break;
       case "no one":
-        return (
-          <>
-            <h1>No one wins!</h1>
-            <button className='play-again' onClick={handleReset}>
-              Play again?
-            </button>
-          </>
-        );
+        h1 = <h1>No one wins!</h1>;
+        buttonText = "Play again?";
+        break;
       case "X":
       case "O":
-        return (
-          <>
-            <h1>{playerToMove} wins!</h1>
-            <button className='play-again' onClick={handleReset}>
-              Play again?
-            </button>
-          </>
-        );
+        h1 = <h1>{playerToMove} wins!</h1>;
+        buttonText = "Play again?";
     }
+    return (
+      <>
+        {h1}
+        <button onClick={handleReset}>{buttonText}</button>
+      </>
+    );
   };
 
   return (
