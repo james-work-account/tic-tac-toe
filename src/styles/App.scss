@@ -1,0 +1,90 @@
+@use "constants";
+
+@mixin removeButtonStyling() {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
+@mixin boxShadowAndTransform($boxShadowSize, $maxSize) {
+  box-shadow: $boxShadowSize $boxShadowSize 0 1px constants.$darker-colour;
+  transform: translate(($maxSize - $boxShadowSize), ($maxSize - $boxShadowSize));
+}
+
+@mixin transition($property) {
+  transition: $property 100ms ease-in-out;
+}
+
+#board {
+  border: 3px solid constants.$nice-green;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+
+  .square {
+    border: 2px solid constants.$nice-green;
+    width: 100px;
+    height: 100px;
+    button {
+      @include removeButtonStyling();
+      @include transition(background);
+      height: 100%;
+      width: 100%;
+      background: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      font-size: 32px;
+
+      &:hover {
+        background-color: rgba(constants.$bluey-gray, 0.7);
+
+        &:not(:empty) {
+          background-color: rgba(constants.$dark-red, 0.7);
+        }
+      }
+
+      &:disabled {
+        $disabled-background-colour: rgba(constants.$bluey-gray, 0.5);
+        @include transition(color);
+        background-color: $disabled-background-colour;
+        color: rgba(constants.$nice-green, 0.5);
+        cursor: unset;
+
+        &:hover {
+          background-color: $disabled-background-colour;
+        }
+      }
+    }
+  }
+}
+
+#heading {
+  margin-bottom: 20px;
+  text-align: center;
+
+  button {
+    $maxSize: 5px;
+    @include removeButtonStyling();
+    @include boxShadowAndTransform($maxSize, $maxSize);
+    @include transition(background);
+    background-color: constants.$bluey-gray;
+    font-size: 24px;
+    color: constants.$nice-green;
+    padding: 0.5em;
+    font-weight: bold;
+    border-radius: 10px;
+
+    &:active {
+      @include boxShadowAndTransform(2px, $maxSize);
+    }
+
+    &:hover {
+      background-color: rgba(constants.$bluey-gray, 0.6);
+    }
+  }
+}
