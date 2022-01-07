@@ -7,6 +7,6 @@ TODO: make actually multiplayer.
 ## Running locally
 
 ```
-yarn install
-yarn run serve
+npm install
+npm run serve
 ```
