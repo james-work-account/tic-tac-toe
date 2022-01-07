@@ -1,30 +1,34 @@
-import { PlayerAction, Winner } from "../types";
+import { useCallback } from "react";
+import { useSelector, shallowEqual, useDispatch } from "react-redux";
+import { Dispatch } from "redux";
+import { resetGame } from "../store/actionCreators";
 
-interface Props {
-  winner: Winner;
-  playerToMove: PlayerAction;
-  handleReset: () => void;
-}
-export const Header: React.FC<Props> = ({ winner, playerToMove, handleReset }) => {
-  let h1: JSX.Element;
+export const Header: React.FC = () => {
+  const dispatch: Dispatch<any> = useDispatch();
+
+  const { winner, playerToMove } = useSelector((state: GameState) => state, shallowEqual);
+
+  const handleReset = useCallback(() => dispatch(resetGame()), [dispatch]);
+
+  let h1Text: string;
   let buttonText: "Reset game" | "Play again?";
   switch (winner) {
     case null:
-      h1 = <h1>{playerToMove} to move!</h1>;
+      h1Text = `${playerToMove} to move!`;
       buttonText = "Reset game";
       break;
     case "no one":
-      h1 = <h1>No one wins!</h1>;
+      h1Text = "No one wins!";
       buttonText = "Play again?";
       break;
     case "X":
     case "O":
-      h1 = <h1>{playerToMove} wins!</h1>;
+      h1Text = `${playerToMove} wins!`;
       buttonText = "Play again?";
   }
   return (
     <header id="heading">
-      {h1}
+      <h1>{h1Text}</h1>
       <button onClick={handleReset}>{buttonText}</button>
     </header>
   );
