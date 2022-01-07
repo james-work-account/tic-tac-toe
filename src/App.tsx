@@ -1,21 +1,32 @@
 import React, { useState } from "react";
+import { Game } from "./components/Game";
+import { Header } from "./components/Header";
 import "./styles/App.scss";
+import { Board, Cell, FullSet, PlayerAction, Winner } from "./types";
 
-type PlayerAction = "X" | "O";
-type CellState = PlayerAction | null;
-type Board = CellState[];
-type FullSet = [CellState, CellState, CellState];
-type Winner = CellState | "no one";
-
-const initialBoard: Board = [null, null, null, null, null, null, null, null, null];
-
-const winningStates: FullSet[] = [
-  ["X", "X", "X"],
-  ["O", "O", "O"],
+const initialBoard: Board = [
+  { state: null, description: "A1" },
+  { state: null, description: "A2" },
+  { state: null, description: "A3" },
+  { state: null, description: "B1" },
+  { state: null, description: "B2" },
+  { state: null, description: "B3" },
+  { state: null, description: "C1" },
+  { state: null, description: "C2" },
+  { state: null, description: "C3" },
 ];
 
-function compare<T>(expected: [T, T, T], actual: [T, T, T]): boolean {
-  return expected[0] === actual[0] && expected[1] === actual[1] && expected[2] === actual[2];
+const winningStates: FullSet[] = [
+  [{ state: "X" }, { state: "X" }, { state: "X" }],
+  [{ state: "O" }, { state: "O" }, { state: "O" }],
+];
+
+function compare(expected: [Cell, Cell, Cell], actual: [Cell, Cell, Cell]): boolean {
+  return (
+    expected[0].state === actual[0].state &&
+    expected[1].state === actual[1].state &&
+    expected[2].state === actual[2].state
+  );
 }
 
 const App: React.FC = () => {
@@ -53,7 +64,7 @@ const App: React.FC = () => {
       }
     }
     for (const square of newBoard) {
-      if (square === null) {
+      if (square.state === null) {
         return false; // if there are any legal moves left, keep playing
       }
     }
@@ -62,10 +73,10 @@ const App: React.FC = () => {
   }
 
   function handlePlayerMove(positionInBoard: number): void {
-    const targetState: CellState = board[positionInBoard];
+    const targetState = board[positionInBoard]?.state;
     if (targetState === null) {
       const newBoard: Board = board.map((square, i) =>
-        i === positionInBoard ? playerToMove : square
+        i === positionInBoard ? { state: playerToMove, description: square.description } : square
       );
       const isGameOver = checkIfGameIsOver(newBoard);
       setBoard(newBoard);
@@ -79,45 +90,10 @@ const App: React.FC = () => {
     setWinner(null);
   }
 
-  const Heading: React.FC = () => {
-    let h1: JSX.Element;
-    let buttonText: "Reset game" | "Play again?";
-    switch (winner) {
-      case null:
-        h1 = <h1>{playerToMove} to move!</h1>;
-        buttonText = "Reset game";
-        break;
-      case "no one":
-        h1 = <h1>No one wins!</h1>;
-        buttonText = "Play again?";
-        break;
-      case "X":
-      case "O":
-        h1 = <h1>{playerToMove} wins!</h1>;
-        buttonText = "Play again?";
-    }
-    return (
-      <>
-        {h1}
-        <button onClick={handleReset}>{buttonText}</button>
-      </>
-    );
-  };
-
   return (
     <>
-      <div id='heading'>
-        <Heading />
-      </div>
-      <div id='board'>
-        {board.map((square, i) => (
-          <div className='square' key={i}>
-            <button onClick={() => handlePlayerMove(i)} disabled={winner !== null}>
-              {square}
-            </button>
-          </div>
-        ))}
-      </div>
+      <Header winner={winner} playerToMove={playerToMove} handleReset={handleReset} />
+      <Game board={board} winner={winner} handlePlayerMove={handlePlayerMove} />
     </>
   );
 };
